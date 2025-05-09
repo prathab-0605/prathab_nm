@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voice Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Voice Assistant</h1>
+    <button id="start-btn">🎤 Start Listening</button>
+    <p id="output">Say something like "What time is it?"</p>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const output = document.getElementById('output');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    startBtn.addEventListener('click', () => {
+      recognition.start();
+      output.textContent = 'Listening...';
+    });
+
+    recognition.onresult = (event) => {
+      const command = event.results[0][0].transcript.toLowerCase();
+      output.textContent = `You said: "${command}"`;
+      respondToCommand(command);
+    };
+
+    recognition.onerror = (event) => {
+      output.textContent = 'Error occurred: ' + event.error;
+    };
+
+    function respondToCommand(command) {
+      let response = "Sorry, I didn't understand that.";
+
+      if (command.includes('hello')) {
+        response = 'Hello there!';
+      } else if (command.includes('time')) {
+        const now = new Date();
+        response = `It is ${now.getHours()} ${now.getMinutes()}`;
+      } else if (command.includes('your name')) {
+        response = "I'm your voice assistant!";
+      } else if (command.includes('how are you')) {
+        response = "I'm doing great, thank you!";
+      }
+
+      speak(response);
+    }
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
